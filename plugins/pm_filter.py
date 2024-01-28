@@ -11,12 +11,12 @@ from Script import script
 import pyrogram
 from database.connections_mdb import active_connection, all_connections, delete_connection, if_active, make_active, \
     make_inactive
-from info import ADMINS, AUTH_CHANNEL, AUTH_USERS, SUPPORT_CHAT_ID, CUSTOM_FILE_CAPTION, MSG_ALRT, PICS, AUTH_GROUPS, P_TTI_SHOW_OFF, GRP_LNK, CHNL_LNK, NOR_IMG, LOG_CHANNEL, SPELL_IMG, IMDB, \
+from info import ADMINS, AUTH_CHANNEL, AUTH_USERS, SUPPORT_CHAT_ID, CUSTOM_FILE_CAPTION, MSG_ALRT, PICS, AUTH_GROUPS, P_TTI_SHOW_OFF, GRP_LNK, CHNL_LNK, LOG_CHANNEL, SPELL_IMG, IMDB, \
     SINGLE_BUTTON, SPELL_CHECK_REPLY, IMDB_TEMPLATE, NO_RESULTS_MSG, IS_VERIFY, HOW_TO_VERIFY
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, InputMediaPhoto
 from pyrogram import Client, filters, enums
 from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid
-from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_settings, save_group_settings, get_shortlink, send_all, check_verification, get_token
+from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_settings, save_group_settings, get_shortlink, check_verification, get_token
 from database.users_chats_db import db
 from database.ia_filterdb import Media, get_file_details, get_search_results, get_bad_files, db as clientDB
 from database.filters_mdb import (
@@ -102,7 +102,6 @@ async def next_page(bot, query):
     if not files:
         return
     settings = await get_settings(query.message.chat.id)
-    temp.SEND_ALL_TEMP[query.from_user.id] = files
     if 'is_shortlink' in settings.keys():
         ENABLE_SHORTLINK = settings['is_shortlink']
     else:
@@ -152,31 +151,18 @@ async def next_page(bot, query):
             ]
             for file in files
         ]
-    try:
-        if settings['auto_delete']:
-            btn.insert(0, 
-                [
-                    InlineKeyboardButton(f'ɪɴꜰᴏ', 'reqinfo'),
-                    InlineKeyboardButton(f'ᴍᴏᴠɪᴇ', 'minfo'),
-                    InlineKeyboardButton(f'ꜱᴇʀɪᴇꜱ', 'sinfo')
-                ]
-            )
-        else:
-            btn.insert(0, 
-                [
-                    InlineKeyboardButton(f'ᴍᴏᴠɪᴇ', 'minfo'),
-                    InlineKeyboardButton(f'ꜱᴇʀɪᴇꜱ', 'sinfo')
-                ]
-            )            
-    except KeyError:
-        await save_group_settings(query.message.chat.id, 'auto_delete', True)
-        btn.insert(0, 
-            [
-                InlineKeyboardButton(f'ɪɴꜰᴏ', 'reqinfo'),
-                InlineKeyboardButton(f'ᴍᴏᴠɪᴇ', 'minfo'),
-                InlineKeyboardButton(f'ꜱᴇʀɪᴇꜱ', 'sinfo')
-            ]
-        )
+    btn.insert(0, 
+        [
+            InlineKeyboardButton("! Lᴀɴɢᴜᴀɢᴇs !", callback_data=f"select_lang#{req}")
+        ]
+    )
+    btn.insert(1, 
+        [
+            InlineKeyboardButton(f'ɪɴꜰᴏ', 'reqinfo'),
+            InlineKeyboardButton(f'ᴍᴏᴠɪᴇ', 'minfo'),
+            InlineKeyboardButton(f'ꜱᴇʀɪᴇꜱ', 'sinfo')
+        ]
+    )
     if 0 < offset <= 10:
         off_set = 0
     elif offset == 0:
@@ -201,14 +187,7 @@ async def next_page(bot, query):
                                      callback_data="pages"),
                 InlineKeyboardButton("𝐍𝐄𝐗𝐓 ⌦", callback_data=f"next_{req}_{key}_{n_offset}")
             ],
-        )    
-    btn.insert(0, [
-        InlineKeyboardButton("! Sᴇɴᴅ Aʟʟ Tᴏ PM !", callback_data=f"send_fall#files#{offset}#{req}"),
-        InlineKeyboardButton("! Lᴀɴɢᴜᴀɢᴇs !", callback_data=f"select_lang#{req}")
-    ])
-    btn.insert(0, [
-        InlineKeyboardButton("⚡ Cʜᴇᴄᴋ Bᴏᴛ PM ⚡", url=f"https://t.me/{temp.U_NAME}")
-    ])
+        )
     try:
         await query.edit_message_reply_markup(
             reply_markup=InlineKeyboardMarkup(btn)
@@ -232,7 +211,6 @@ async def language_check(bot, query):
     files, offset, total_results = await get_search_results(query.message.chat.id, movie, offset=0, filter=True)
     if files:
         settings = await get_settings(query.message.chat.id)
-        temp.SEND_ALL_TEMP[query.from_user.id] = files
         if 'is_shortlink' in settings.keys():
             ENABLE_SHORTLINK = settings['is_shortlink']
         else:
@@ -285,43 +263,18 @@ async def language_check(bot, query):
                 ]
                 for file in files
             ]
-
-        try:
-            if settings['auto_delete']:
-                btn.insert(0, 
-                    [
-                        InlineKeyboardButton(f'ɪɴꜰᴏ', 'reqinfo'),
-                        InlineKeyboardButton(f'ᴍᴏᴠɪᴇ', 'minfo'),
-                        InlineKeyboardButton(f'ꜱᴇʀɪᴇꜱ', 'sinfo')
-                    ]
-                )
-
-            else:
-                btn.insert(0, 
-                    [
-                        InlineKeyboardButton(f'ᴍᴏᴠɪᴇ', 'minfo'),
-                        InlineKeyboardButton(f'ꜱᴇʀɪᴇꜱ', 'sinfo')
-                    ]
-                )
-                    
-        except KeyError:
-            await save_group_settings(query.message.chat.id, 'auto_delete', True)
-            btn.insert(0, 
-                [
-                    InlineKeyboardButton(f'ɪɴꜰᴏ', 'reqinfo'),
-                    InlineKeyboardButton(f'ᴍᴏᴠɪᴇ', 'minfo'),
-                    InlineKeyboardButton(f'ꜱᴇʀɪᴇꜱ', 'sinfo')
-                ]
-            )
-        
-        btn.insert(0, [
-            InlineKeyboardButton("! Sᴇɴᴅ Aʟʟ Tᴏ PM !", callback_data=f"send_fall#{pre}#{0}#{userid}"),
-            InlineKeyboardButton("! Lᴀɴɢᴜᴀɢᴇs !", callback_data=f"select_lang#{userid}")
-        ])
-
-        btn.insert(0, [
-            InlineKeyboardButton("⚡ Cʜᴇᴄᴋ Bᴏᴛ PM ⚡", url=f"https://t.me/{temp.U_NAME}")
-        ])
+        btn.insert(0, 
+            [
+                InlineKeyboardButton("! Lᴀɴɢᴜᴀɢᴇs !", callback_data=f"select_lang#{userid}")
+            ]
+        )
+        btn.insert(1, 
+            [
+                InlineKeyboardButton(f'ɪɴꜰᴏ', 'reqinfo'),
+                InlineKeyboardButton(f'ᴍᴏᴠɪᴇ', 'minfo'),
+                InlineKeyboardButton(f'ꜱᴇʀɪᴇꜱ', 'sinfo')
+            ]
+        )
         if offset != "":
             key = f"{query.message.chat.id}-{query.message.id}"
             BUTTONS[key] = search
@@ -693,6 +646,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
         except Exception as e:
             await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
+            
     elif query.data.startswith("checksub"):
         if AUTH_CHANNEL and not await is_subscribed(client, query):
             await query.answer("Jᴏɪɴ ᴏᴜʀ Bᴀᴄᴋ-ᴜᴘ ᴄʜᴀɴɴᴇʟ ᴍᴀʜɴ! 😒", show_alert=True)
@@ -1265,12 +1219,6 @@ async def cb_handler(client: Client, query: CallbackQuery):
                                          callback_data=f'setgs#welcome#{settings["welcome"]}#{str(grp_id)}')
                 ],
                 [
-                    InlineKeyboardButton('Aᴜᴛᴏ-Dᴇʟᴇᴛᴇ',
-                                         callback_data=f'setgs#auto_delete#{settings["auto_delete"]}#{str(grp_id)}'),
-                    InlineKeyboardButton('10 Mɪɴs' if settings["auto_delete"] else '✘ Oғғ',
-                                         callback_data=f'setgs#auto_delete#{settings["auto_delete"]}#{str(grp_id)}')
-                ],
-                [
                     InlineKeyboardButton('Aᴜᴛᴏ-Fɪʟᴛᴇʀ',
                                          callback_data=f'setgs#auto_ffilter#{settings["auto_ffilter"]}#{str(grp_id)}'),
                     InlineKeyboardButton('✔ Oɴ' if settings["auto_ffilter"] else '✘ Oғғ',
@@ -1367,40 +1315,18 @@ async def auto_filter(client, msg, spoll=False):
             ]
             for file in files
         ]
-    try:
-        if settings['auto_delete']:
-            btn.insert(0, 
-                [
-                    InlineKeyboardButton(f'ɪɴꜰᴏ', 'reqinfo'),
-                    InlineKeyboardButton(f'ᴍᴏᴠɪᴇ', 'minfo'),
-                    InlineKeyboardButton(f'ꜱᴇʀɪᴇꜱ', 'sinfo')
-                ]
-            )
-        else:
-            btn.insert(0, 
-                [
-                    InlineKeyboardButton(f'ᴍᴏᴠɪᴇ', 'minfo'),
-                    InlineKeyboardButton(f'ꜱᴇʀɪᴇꜱ', 'sinfo')
-                ]
-            )       
-    except KeyError:
-        await save_group_settings(message.chat.id, 'auto_delete', True)
-        btn.insert(0, 
-            [
-                InlineKeyboardButton(f'ɪɴꜰᴏ', 'reqinfo'),
-                InlineKeyboardButton(f'ᴍᴏᴠɪᴇ', 'minfo'),
-                InlineKeyboardButton(f'ꜱᴇʀɪᴇꜱ', 'sinfo')
-            ]
-        )
-
-    btn.insert(0, [
-        InlineKeyboardButton("! Sᴇɴᴅ Aʟʟ Tᴏ PM !", callback_data=f"send_fall#{pre}#{0}#{message.from_user.id}"),
-        InlineKeyboardButton("! Lᴀɴɢᴜᴀɢᴇs !", callback_data=f"select_lang#{message.from_user.id}")
-    ])
-
-    btn.insert(0, [
-        InlineKeyboardButton("⚡ Cʜᴇᴄᴋ Bᴏᴛ PM ⚡", url=f"https://t.me/{temp.U_NAME}")
-    ])
+    btn.insert(0, 
+        [
+            InlineKeyboardButton("! Lᴀɴɢᴜᴀɢᴇs !", callback_data=f"select_lang#{message.from_user.id}")
+        ]
+    )
+    btn.insert(1, 
+        [
+            InlineKeyboardButton(f'ɪɴꜰᴏ', 'reqinfo'),
+            InlineKeyboardButton(f'ᴍᴏᴠɪᴇ', 'minfo'),
+            InlineKeyboardButton(f'ꜱᴇʀɪᴇꜱ', 'sinfo')
+        ]
+    ) 
     if offset != "":
         key = f"{message.chat.id}-{message.id}"
         BUTTONS[key] = search
@@ -1452,55 +1378,27 @@ async def auto_filter(client, msg, spoll=False):
     if imdb and imdb.get('poster'):
         try:
             hehe = await message.reply_photo(photo=imdb.get('poster'), caption=cap[:1024], reply_markup=InlineKeyboardMarkup(btn))
-            try:
-                if settings['auto_delete']:
-                    await asyncio.sleep(600)
-                    await hehe.delete()
-                    await message.delete()
-            except KeyError:
-                await save_group_settings(message.chat.id, 'auto_delete', True)
-                await asyncio.sleep(600)
-                await hehe.delete()
-                await message.delete()
+            await asyncio.sleep(600)
+            await hehe.delete()
+            await message.delete()       
         except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
             pic = imdb.get('poster')
             poster = pic.replace('.jpg', "._V1_UX360.jpg")
             hmm = await message.reply_photo(photo=poster, caption=cap[:1024], reply_markup=InlineKeyboardMarkup(btn))
-            try:
-                if settings['auto_delete']:
-                    await asyncio.sleep(600)
-                    await hmm.delete()
-                    await message.delete()
-            except KeyError:
-                await save_group_settings(message.chat.id, 'auto_delete', True)
-                await asyncio.sleep(600)
-                await hmm.delete()
-                await message.delete()
+            await asyncio.sleep(600)
+            await hmm.delete()
+            await message.delete()    
         except Exception as e:
             logger.exception(e)
-            fek = await message.reply_photo(photo=NOR_IMG, caption=cap, reply_markup=InlineKeyboardMarkup(btn))
-            try:
-                if settings['auto_delete']:
-                    await asyncio.sleep(600)
-                    await fek.delete()
-                    await message.delete()
-            except KeyError:
-                await save_group_settings(message.chat.id, 'auto_delete', True)
-                await asyncio.sleep(600)
-                await fek.delete()
-                await message.delete()
-    else:
-        fuk = await message.reply_photo(photo=NOR_IMG, caption=cap, reply_markup=InlineKeyboardMarkup(btn))
-        try:
-            if settings['auto_delete']:
-                await asyncio.sleep(600)
-                await fuk.delete()
-                await message.delete()
-        except KeyError:
-            await save_group_settings(message.chat.id, 'auto_delete', True)
+            fek = await message.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
             await asyncio.sleep(600)
-            await fuk.delete()
+            await fek.delete()
             await message.delete()
+    else:
+        fuk = await message.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
+        await asyncio.sleep(600)
+        await fuk.delete()
+        await message.delete()    
     if spoll:
         await msg.message.delete()
 
@@ -1567,17 +1465,8 @@ async def advantage_spell_chok(client, msg):
         caption=(script.CUDNT_FND.format(mv_rqst)),
         reply_markup=InlineKeyboardMarkup(btn)
     )
-    try:
-        if settings['auto_delete']:
-            await asyncio.sleep(600)
-            await spell_check_del.delete()
-    except KeyError:
-            grpid = await active_connection(str(msg.from_user.id))
-            await save_group_settings(grpid, 'auto_delete', True)
-            settings = await get_settings(msg.chat.id)
-            if settings['auto_delete']:
-                await asyncio.sleep(600)
-                await spell_check_del.delete()
+    await asyncio.sleep(600)
+    await spell_check_del.delete()
 
 async def manual_filters(client, message, text=False):
     group_id = message.chat.id
