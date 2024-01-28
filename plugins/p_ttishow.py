@@ -1,5 +1,8 @@
+import time, asyncio, os, sys
+import pytz
+from datetime import datetime
 from pyrogram import Client, filters, enums
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery, Message
 from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong, PeerIdInvalid
 from info import ADMINS, LOG_CHANNEL, SUPPORT_CHAT, MELCOW_NEW_USERS, MELCOWE_IMG, CHNL_LNK, GRP_LNK
 from database.users_chats_db import db
@@ -10,7 +13,6 @@ from pyrogram.errors import ChatAdminRequired
 import asyncio 
 
 """-----------------------------------------https://t.me/GetTGLink/4179 --------------------------------------"""
-
 @Client.on_message(filters.new_chat_members & filters.group)
 async def save_group(bot, message):
     r_j_check = [u.id for u in message.new_chat_members]
@@ -41,43 +43,63 @@ async def save_group(bot, message):
                     InlineKeyboardButton('Sᴜᴘᴘᴏʀᴛ Gʀᴏᴜᴘ', url=GRP_LNK),
                     InlineKeyboardButton('Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ', url=CHNL_LNK)
                  ],[
-                    InlineKeyboardButton("Bᴏᴛ Oᴡɴᴇʀ", url="t.me/creatorbeatz")
+                    InlineKeyboardButton("Bᴏᴛ Oᴡɴᴇʀ", url="t.me/Rexisop99")
                   ]]
         reply_markup=InlineKeyboardMarkup(buttons)
         await message.reply_text(
             text=f"<b>Thankyou For Adding Me In {message.chat.title} ❣️\n\nIf you have any questions & doubts about using me contact support.</b>",
             reply_markup=reply_markup)
     else:
-        settings = await get_settings(message.chat.id)
-        if settings["welcome"]:
-            for u in message.new_chat_members:
-                if (temp.MELCOW).get('welcome') is not None:
-                    try:
-                        await (temp.MELCOW['welcome']).delete()
-                    except:
-                        pass
-                temp.MELCOW['welcome'] = await message.reply_photo(
-                                                 photo=(MELCOWE_IMG),
-                                                 caption=(script.MELCOW_ENG.format(u.mention, message.chat.title)),
-                                                 reply_markup=InlineKeyboardMarkup(
-                                                                         [[
-                                                                           InlineKeyboardButton('Sᴜᴘᴘᴏʀᴛ Gʀᴏᴜᴘ', url=GRP_LNK),
-                                                                           InlineKeyboardButton('Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ', url=CHNL_LNK)
-                                                                        ],[
-                                                                           InlineKeyboardButton("Bᴏᴛ Oᴡɴᴇʀ", url="t.me/creatorbeatz")
-                                                                         ]]
-                                                 ),
-                                                 parse_mode=enums.ParseMode.HTML
-                )
-                
-        if settings["auto_delete"]:
-            await asyncio.sleep(600)
-            await (temp.MELCOW['welcome']).delete()
-                
-               
+        for user in message.new_chat_members:
+            try:
+                image = await bot.download_media(user.photo.big_file_id)
+            except:
+                image = MELCOWE_IMG
+    timez = "Asia/Kolkata"
+    mr = datetime.now(pytz.timezone(f'{timez}'))
+    date = mr.strftime('%d/%m/%y')
+    time = mr.strftime('%I:%M:%S %p')
+    chat_member_p = await message.chat.get_member(message.from_user.id)
+    joined_date = (chat_member_p.joined_date or datetime.now(pytz.timezone(f'{timez}'))).strftime("%d/%m/%Y")
+    joined_time = (datetime.now(pytz.timezone(f'{timez}'))).strftime("%I:%M:%S")
+    joined_day = (chat_member_p.joined_date or datetime.now(pytz.timezone(f'{timez}'))).strftime("%A")
+    text = f'''
+<b>🦋 ʜᴇʏ ʙᴜᴅᴅʏ {user.mention}\n\n✨ ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ {(await bot.get_chat(message.chat.id)).title} ❤️</b>
+
+<b>┌ ꜰɪʀsᴛ ɴᴀᴍᴇ :</b> {user.first_name}
+<b>├ ɪᴅ :</b> <code>{user.id}</code>
+<b>├ ʟᴀsᴛ ɴᴀᴍᴇ :</b> {user.last_name or '~'}
+<b>├ ᴜsᴇʀ ɴᴀᴍᴇ :</b> {'@' + user.username if user.username else '~'}
+<b>├ ʟᴀɴɢᴜᴀɢᴇ :</b> {user.language_code.upper() if user.language_code else '~'}
+<b>├ ᴅᴄ ɪᴅ :</b> {user.dc_id or '~'}
+<b>└ ᴘʀᴇᴍɪᴜᴍ ᴜsᴇʀ :</b> {'ʏᴇs' if user.is_premium else 'ɴᴏ'}
+
+<b>┌ ᴊᴏɪɴᴇᴅ ᴛɪᴍᴇ :</b> <code>{joined_time}</code>
+<b>├ ᴊᴏɪɴᴇᴅ ᴅᴀʏ :</b> <code>{joined_day}</code>
+<b>└ ᴊᴏɪɴᴇᴅ ᴅᴀᴛᴇ :</b> <code>{joined_date}</code>'''
+    buttons = [[
+        InlineKeyboardButton('🔰 ɢʀᴏᴜᴘ ʀᴜʟᴇs​ 🔰', url='https://graph.org/%F0%9D%97%9A%F0%9D%97%A5%F0%9D%97%A2%F0%9D%97%A8%F0%9D%97%A3-%F0%9D%97%A5%F0%9D%97%A8%F0%9D%97%9F%F0%9D%97%98%F0%9D%97%A6-10-29')
+    ]]
+    reply_markup = InlineKeyboardMarkup(buttons)
+    myrr = await message.reply_photo(
+        photo=image,
+        reply_markup=reply_markup,
+        caption=text,
+        parse_mode=enums.ParseMode.HTML,
+        disable_notification=True
+    )
+    await asyncio.sleep(50)
+    await myrr.delete()
 
 
+@Client.on_message(filters.command('restart') & filters.user(ADMINS))
+async def restart_bot(bot, message):
+    msg = await message.reply("Restarting...")
+    with open('restart.txt', 'w+') as file:
+        file.write(f"{msg.chat.id}\n{msg.id}")
+    os.execl(sys.executable, sys.executable, "bot.py")
 
+        
 @Client.on_message(filters.command('leave') & filters.user(ADMINS))
 async def leave_a_chat(bot, message):
     if len(message.command) == 1:
@@ -89,12 +111,15 @@ async def leave_a_chat(bot, message):
         chat = chat
     try:
         buttons = [[
-            InlineKeyboardButton('Support', url=f'https://t.me/{SUPPORT_CHAT}')
+            InlineKeyboardButton('Support Group', url="https://t.me/+r9ArDaaCETE0OGU9"),
+            InlineKeyboardButton('Owner', url="https://t.me/TeamHMT_Bot")
+        ],[
+            InlineKeyboardButton('Use Me Here', url=f'https://t.me/{SUPPORT_CHAT}')
         ]]
         reply_markup=InlineKeyboardMarkup(buttons)
         await bot.send_message(
             chat_id=chat,
-            text='<b>Hello Friends, \nMy admin has told me to leave from group so i go! If you wanna add me again contact my support group.</b>',
+            text='<b>Hello Friends, \nMy admin has told me to leave from group, so i go! If you wanna add me again contact my Support Group or My Owner</b>',
             reply_markup=reply_markup,
         )
 
