@@ -55,7 +55,7 @@ JOIN_REQS_DB = environ.get("JOIN_REQS_DB", DATABASE_URI)
 # Others
 SHORTLINK_URL = environ.get('SHORTLINK_URL', 'onepagelink.in')
 SHORTLINK_API = environ.get('SHORTLINK_API', '59d8f4b692be27f966418748423e52cf7b440dff')
-IS_SHORTLINK = is_enabled((environ.get('IS_SHORTLINK', 'False')), False)
+IS_SHORTLINK = is_enabled((environ.get('IS_SHORTLINK', 'True')), False)
 TUTORIAL = environ.get('TUTORIAL', 'https://t.me/Team_HMT/8')
 IS_TUTORIAL = bool(environ.get('IS_TUTORIAL', True))
 DELETE_CHANNELS = [int(dch) if id_pattern.search(dch) else dch for dch in environ.get('DELETE_CHANNELS', '0').split()]
