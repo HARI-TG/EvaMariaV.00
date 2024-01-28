@@ -21,9 +21,14 @@ BOT_TOKEN = environ.get('BOT_TOKEN', "6802235059:AAGyFlSQRUvl_gOFFbAaaQvaLFsGFzK
 CACHE_TIME = int(environ.get('CACHE_TIME', 300))
 USE_CAPTION_FILTER = is_enabled((environ.get('USE_CAPTION_FILTER', 'True')), True)
 
-PICS = (environ.get('PICS', 'https://telegra.ph/file/6a0726f79acd8300e9a04.jpg https://telegra.ph/file/68289fefb76dbc43b766d.jpg https://telegra.ph/file/0caad29c0cf91c23fb1b6.jpg https://telegra.ph/file/8c34c755dd16581c1c6b5.jpg https://telegra.ph/file/365e35b554e5a3ea83857.jpg https://telegra.ph/file/07f185825c5b7bfd6fbfb.jpg https://telegra.ph/file/85f95494565a762edb3e7.jpg https://telegra.ph/file/708a1d6ce805fcc6a46d0.jpg https://telegra.ph/file/d799c1a964f211028cc97.jpg https://telegra.ph/file/b987425b80bca0cf45c7e.jpg https://telegra.ph/file/2a8b3779760289b76de24.jpg https://telegra.ph/file/47961be968719b3e24cf0.jpg https://telegra.ph/file/2e127b0f6b1810d733c09.jpg https://telegra.ph/file/281b18770a43a29120252.jpg https://telegra.ph/file/2086dd2aa8382e758a599.jpg https://telegra.ph/file/fcc849db4bf5c517f0f8d.jpg')).split()
-MELCOW_VID = environ.get("MELCOW_VID", "https://telegra.ph/file/451f038b4e7c2ddd10dc0.mp4")
-SPELL_IMG = environ.get("SPELL_IMG", "https://telegra.ph/file/5e2d4418525832bc9a1b9.jpg")
+PICS = (environ.get('PICS', 'https://graph.org/file/64aa65f5019f44220a058.jpg https://graph.org/file/79b31ed618ab163aa681c.jpg https://graph.org/file/11149e001a1abffab1934.jpg https://graph.org/file/b4ac27df8e8e443fa219d.jpg https://graph.org/file/d77eb9050db8e7700fff7.jpg https://graph.org/file/40b89081a5ee2e1a84251.jpg https://graph.org/file/ae85884397284e2aae446.jpg https://graph.org/file/0097bc77bbc24592bebd6.jpg https://graph.org/file/32a28148dc4552f934ce7.jpg https://graph.org/file/2cc0e4b229e8805abd6ae.jpg https://graph.org/file/845ffca9eae27536e7825.jpg https://graph.org/file/e224691a8c3a5146c5cc7.jpg https://graph.org/file/1d19d59c74a6d2fd69a33.jpg https://graph.org/file/e015100b5c27cf9224037.jpg https://graph.org/file/d09a6c86ca0e8ac360785.jpg https://graph.org/file/860e261d8c4ce72ae9386.jpg https://graph.org/file/49b2af84e44b08f945c06.jpg https://graph.org/file/7bb41739746bf0a4bee34.jpg')).split()
+MELCOWE_IMG = environ.get("MELCOWE_IMG", "https://telegra.ph//file/5db753d2897e5fc9ce954.jpg")
+SPELL_IMG = environ.get("SPELL_IMG", "https://graph.org/file/438e4abd5a2cf97fcfd8f.jpg")
+SETTINGS_PICS = (environ.get('SETTINGS_PICS', 'https://graph.org/file/73e4acd0a9f4425fd34be.jpg')).split()
+RULES_PICS = (environ.get('RULES_PICS', 'https://graph.org/file/4752441b16362f2df8e27.jpg https://graph.org/file/e5445f406f428b47556fc.jpg')).split()
+SUPPORT_PICS = (environ.get('SUPPORT_PICS', 'https://graph.org/file/30fc6ea74df988db9b417.jpg')).split()
+
+# Admins, Channels & Users
 
 # Admins, Channels & Users
 OWNER_ID = int(getenv("OWNER_ID", 1426588906))
