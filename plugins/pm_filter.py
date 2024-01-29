@@ -102,20 +102,21 @@ async def next_page(bot, query):
         return
     btn = [
         [
-            InlineKeyboardButton(text=f"[{get_size(file.file_size)}] {file.file_name}", callback_data=f'files#{file.file_id}'),
+            InlineKeyboardButton(text=f"📂 {get_size(file.file_size)} {file.file_name}", callback_data=f'files#{file.file_id}'),
         ]
         for file in files
     ]
     btn.insert(0, 
         [
-            InlineKeyboardButton("! Lᴀɴɢᴜᴀɢᴇs !", callback_data=f"select_lang#{req}")
+            InlineKeyboardButton("🎭 sᴇʟᴇᴄᴛ ʏᴏᴜʀ ʟᴀɴɢᴜᴀɢᴇ 🎭", callback_data=f"select_lang#{req}")
         ]
     )
-    btn.insert(1, 
+    btn.insert(1,
         [
-            InlineKeyboardButton(f'ɪɴꜰᴏ', 'reqinfo'),
-            InlineKeyboardButton(f'ᴍᴏᴠɪᴇ', 'minfo'),
-            InlineKeyboardButton(f'ꜱᴇʀɪᴇꜱ', 'sinfo')
+            InlineKeyboardButton(f'📮 ɪɴꜰᴏ', 'reqinfo'),
+            InlineKeyboardButton(f'📟 ᴍᴏᴠɪᴇ', 'minfo'),
+            InlineKeyboardButton(f'🍿 sᴇʀɪᴇs', 'sinfo'),
+            InlineKeyboardButton(f'🎁 ᴛɪᴘs', 'tinfo')
         ]
     )
     if 0 < offset <= 10:
@@ -169,20 +170,21 @@ async def language_check(bot, query):
         pre = 'filep' if settings['file_secure'] else 'file'
         btn = [
             [
-                InlineKeyboardButton(text=f"[{get_size(file.file_size)}] {file.file_name}", callback_data=f'{pre}#{file.file_id}')
+                InlineKeyboardButton(text=f"📂 {get_size(file.file_size)} {file.file_name}", callback_data=f'{pre}#{file.file_id}')
             ]
             for file in files
         ]
         btn.insert(0, 
             [
-                InlineKeyboardButton("! Lᴀɴɢᴜᴀɢᴇs !", callback_data=f"select_lang#{userid}")
+                InlineKeyboardButton("🎭 sᴇʟᴇᴄᴛ ʏᴏᴜʀ ʟᴀɴɢᴜᴀɢᴇ 🎭", callback_data=f"select_lang#{userid}")
             ]
         )
-        btn.insert(1, 
+        btn.insert(1,
             [
-                InlineKeyboardButton(f'ɪɴꜰᴏ', 'reqinfo'),
-                InlineKeyboardButton(f'ᴍᴏᴠɪᴇ', 'minfo'),
-                InlineKeyboardButton(f'ꜱᴇʀɪᴇꜱ', 'sinfo')
+                InlineKeyboardButton(f'📮 ɪɴꜰᴏ', 'reqinfo'),
+                InlineKeyboardButton(f'📟 ᴍᴏᴠɪᴇ', 'minfo'),
+                InlineKeyboardButton(f'🍿 sᴇʀɪᴇs', 'sinfo'),
+                InlineKeyboardButton(f'🎁 ᴛɪᴘs', 'tinfo')
             ]
         )
         if offset != "":
@@ -1099,28 +1101,29 @@ async def auto_filter(client, msg, spoll=False):
     pre = 'filep' if settings['file_secure'] else 'file'
     btn = [
         [
-            InlineKeyboardButton(text=f"[{get_size(file.file_size)}] {file.file_name}", callback_data=f'{pre}#{file.file_id}')
+            InlineKeyboardButton(text=f"📂 {get_size(file.file_size)} {file.file_name}", callback_data=f'{pre}#{file.file_id}')
         ]
         for file in files
     ]
     btn.insert(0, 
         [
-            InlineKeyboardButton("! Lᴀɴɢᴜᴀɢᴇs !", callback_data=f"select_lang#{message.from_user.id}")
+            InlineKeyboardButton("🎭 sᴇʟᴇᴄᴛ ʏᴏᴜʀ ʟᴀɴɢᴜᴀɢᴇ 🎭", callback_data=f"select_lang#{message.from_user.id}")
         ]
     )
-    btn.insert(1, 
+    btn.insert(1,
         [
-            InlineKeyboardButton(f'ɪɴꜰᴏ', 'reqinfo'),
-            InlineKeyboardButton(f'ᴍᴏᴠɪᴇ', 'minfo'),
-            InlineKeyboardButton(f'ꜱᴇʀɪᴇꜱ', 'sinfo')
+            InlineKeyboardButton(f'📮 ɪɴꜰᴏ', 'reqinfo'),
+            InlineKeyboardButton(f'📟 ᴍᴏᴠɪᴇ', 'minfo'),
+            InlineKeyboardButton(f'🍿 sᴇʀɪᴇs', 'sinfo'),
+            InlineKeyboardButton(f'🎁 ᴛɪᴘs', 'tinfo')
         ]
-    ) 
+    )
     if offset != "":
         key = f"{message.chat.id}-{message.id}"
         BUTTONS[key] = search
         req = message.from_user.id if message.from_user else 0
         btn.append(
-            [InlineKeyboardButton(text=f"𝐏𝐀𝐆𝐄 1/{math.ceil(int(total_results) / 7)}", callback_data="pages"),
+            [InlineKeyboardButton(text=f"📚 1/{math.ceil(int(total_results) / 7)}", callback_data="pages"),
              InlineKeyboardButton(text="𝐍𝐄𝐗𝐓 ⌦", callback_data=f"next_{req}_{key}_{offset}")]
         )
     else:
